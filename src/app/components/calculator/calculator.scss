@@ -1,0 +1,15 @@
+.heading{
+    font-family: Inter;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: -1.2px;
+}
+
+input[type="radio"] {
+    accent-color: var(#cc4141);
+    fill: var(--Pure-White, #FFF);
+    stroke-width: 1px;
+    stroke: var(--Borders, #D8E2E7);
+}

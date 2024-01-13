@@ -1,0 +1,41 @@
+.circle {
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+    height: 31px;
+    box-shadow: 0 0 0 1pt #D8E2E7;
+    transition: all 0.1s ease-in-out;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 150%;
+    cursor: pointer;
+}
+
+label:hover > .circle {
+    outline: 1px solid #345FF6;
+}
+
+input:checked + label > .circle {
+    outline: 0px solid #345FF6;
+    background-color: rgba(52, 95, 246, 0.15);
+    box-shadow: 0 0 0 0pt;
+}
+
+input:checked + label > .circle::before {
+    content: "";
+    background-color: rgba(52, 95, 246, 1);
+    aspect-ratio: 1 / 1;
+    height: 15px;
+    display: block;
+    position: relative;
+    border-radius: 50%;
+    left: 25%;
+    top: 25%;
+    transition: all 0.1s ease-in-out;
+}

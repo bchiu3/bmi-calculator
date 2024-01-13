@@ -1,0 +1,73 @@
+.grid-top {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+
+    @media only screen
+    and (min-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.header-container {
+    min-height: var(--gradient-height-mobile);
+    @media only screen 
+        and (min-width : 1025px) {
+            min-height: var(--gradient-height);
+    }
+}
+
+.image-man-eating {
+    max-width: 564px;
+    max-height: auto;
+}
+
+.pattern-curved-line-left {
+    height: 200px;
+    width: 85px;
+    position: absolute;
+    justify-self: flex-end;
+    margin-right: 60px;
+}
+
+.padding-containers {
+    padding-left: 140px;
+    padding-right: 140px;
+}
+
+.top-description-container {
+    background: linear-gradient(290deg, #D6E6FE 0%, rgba(214, 252, 254, 0.00) 100%);
+    border-radius: 35px;
+    margin-bottom: 120px;
+}
+
+.container-padding-bottom-gap {
+    padding-bottom: 96px;
+}
+
+#top-description {
+    padding: 0px 116px;
+}
+
+.description-grid {
+    display: grid;
+    grid-gap: 32px;
+    grid-template-columns: repeat(1, 1fr);
+
+    @media only screen
+    and (min-width: 768px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* grids already defined fully in limitation cards */
+.limitation-container {
+    grid-template-columns: repeat(1, 100%);
+    grid-template-rows: repeat(6, 1fr);
+    margin-bottom: 100px;
+
+    @media only screen
+    and (min-width: 768px) {
+        grid-template-rows: auto;
+        grid-template-columns: auto;
+    }
+}

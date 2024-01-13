@@ -1,0 +1,36 @@
+.input-container {
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: -1.2px;
+    padding: 20px 24px;
+    border-radius: 12px;
+    border: 1px solid #D8E2E7;
+}
+
+.input {
+    height: 100%;
+    min-width: 0;
+}
+
+.divider {
+    height: 24px;
+}
+
+.input:focus-visible {
+    outline: none;
+}
+
+.input-container:focus-within {
+    outline: 1px solid #00aaff;
+}
+
+.unit {
+    color: var(--Blue, #345FF6);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: -1.2px;
+}
