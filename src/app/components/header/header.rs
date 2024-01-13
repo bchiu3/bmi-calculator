@@ -10,7 +10,7 @@ pub fn header() -> Html {
     ).expect("failed to parse style");
     
     html! {
-        <img class={container} src="/images/logo.svg" alt="logo"/>
+        <img class={container} src="images/logo.svg" alt="logo"/>
     }
 }
 
