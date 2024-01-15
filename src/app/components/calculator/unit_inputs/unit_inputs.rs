@@ -1,4 +1,4 @@
-use std::{ops::Deref, rc::Rc};
+use std::{ops::Deref, rc::Rc, borrow::Borrow};
 
 use gloo::console::log;
 use stylist::{yew::styled_component, Style};
@@ -21,51 +21,48 @@ pub fn unit_inputs(props: &Props) -> Html {
     let container_style =
         Style::new(STYLE_FILE).expect("Could not load style for calculator inputs");
 
-    let curr_unit: Rc<dyn Units>;
+    let curr_unit: Box<dyn Units>;
 
     match props.unit.deref() {
-        CalcType::Metric(units) => match props.unit_type.as_str() {
-            "Height" => {
-                curr_unit = Rc::new(units.height.clone());
-            }
-            "Weight" => {
-                curr_unit = Rc::new(units.weight.clone());
-            }
-            _ => {
-                curr_unit = Rc::new(units.height.clone());
-                log!("Invalid unit type");
-            }
-        },
-        CalcType::Imperial(units) => match props.unit_type.as_str() {
-            "Height" => {
-                curr_unit = Rc::new(units.height.clone());
-            }
-            "Weight" => {
-                curr_unit = Rc::new(units.weight.clone());
-            }
-            _ => {
-                curr_unit = Rc::new(units.height.clone());
-                log!("Invalid unit type");
-            }
-        },
+        CalcType::Metric(units) => {
+            curr_unit = Box::new(units.clone());
+        }
+        CalcType::Imperial(units) => {
+            curr_unit = Box::new(units.clone());
+        }
     }
+
+    let curr_unit_type = match props.unit_type.as_str() {
+        "Weight" => curr_unit.get_weight_fields(),
+        "Height" => curr_unit.get_height_fields(),
+        _ => panic!("Invalid unit type")
+    };
 
     let blur_change = {
         let props = props.clone();
-        let curr_unit = Rc::clone(&curr_unit);
+        let unit_change = props.unit.deref().clone();
         Callback::from(move |e: FocusEvent| {
             let target: Option<EventTarget> = e.target();
             if let Some(target) = target {
                 let input = target.dyn_into::<HtmlInputElement>().unwrap();
                 let value = input.value();
                 let name = input.name();
-                change_fields(
-                    &props.unit_type,
-                    props.unit.clone(),
-                    Rc::clone(&curr_unit),
-                    &value,
-                    &name,
-                );
+                match props.unit.deref() {
+                    CalcType::Metric(units) => {
+                        if let CalcType::Metric(mut new_unit) = unit_change.clone() {
+                            let value: f32 = value.parse().unwrap_or_else(|_| new_unit.get_value(&name));
+                            new_unit.set_value(&name, value);
+                            props.unit.set(CalcType::Metric(new_unit));
+                        }
+                    }
+                    CalcType::Imperial(units) => {
+                        if let CalcType::Imperial(mut new_unit) = unit_change.clone() {
+                            let value: f32 = value.parse().unwrap_or_else(|_| new_unit.get_value(&name));
+                            new_unit.set_value(&name, value);
+                            props.unit.set(CalcType::Imperial(new_unit));
+                        }
+                    }
+                }
             }
         })
     };
@@ -80,7 +77,7 @@ pub fn unit_inputs(props: &Props) -> Html {
 
     html! {
         <>
-            {curr_unit.get_fields().iter().enumerate().map(|field| {
+            {curr_unit_type.iter().enumerate().map(|field| {
                     let index = field.0;
                     let field = field.1;
                     let mut curr_value = curr_unit.get_value(field).to_string();
@@ -110,89 +107,5 @@ pub fn unit_inputs(props: &Props) -> Html {
                 })
             .collect::<Html>()}
         </>
-    }
-}
-
-fn change_fields(
-    unit_type: &str,
-    unit: UseStateHandle<CalcType>,
-    curr_unit: Rc<dyn Units>,
-    value: &str,
-    name: &str,
-) {
-    match unit_type {
-        "Height" => 
-        match unit.deref() {
-            CalcType::Metric(units) => {
-                let curr_unit = curr_unit
-                    .as_any()
-                    .downcast_ref::<MetricHeightUnit>()
-                    .unwrap();
-                let mut height = curr_unit.clone();
-                height.cm = value.parse().unwrap();
-                let mut new_metric = units.clone();
-                new_metric.height = height;
-                unit.set(CalcType::Metric(new_metric));
-            }
-            CalcType::Imperial(units) => {
-                let curr_unit = curr_unit
-                    .as_any()
-                    .downcast_ref::<ImperialHeightUnit>()
-                    .unwrap();
-                let mut height = curr_unit.clone();
-                match name {
-                    "ft" => {
-                        height.ft = value.parse().unwrap_or(height.ft);
-                    }
-                    "in" => {
-                        height.inches = value.parse().unwrap_or(height.inches);
-                    }
-                    _ => {
-                        log!("Invalid unit type");
-                    }
-                }
-                let mut new_imperial = units.clone();
-                new_imperial.height = height;
-                unit.set(CalcType::Imperial(new_imperial));
-            }
-        },
-        "Weight" => 
-        match unit.deref() {
-            CalcType::Metric(units) => {
-                let curr_unit = curr_unit
-                    .as_any()
-                    .downcast_ref::<MetricWeightUnit>()
-                    .unwrap();
-                let mut weight = curr_unit.clone();
-                weight.kg = value.parse().unwrap();
-                let mut new_metric = units.clone();
-                new_metric.weight = weight;
-                unit.set(CalcType::Metric(new_metric));
-            }
-            CalcType::Imperial(units) => {
-                let curr_unit = curr_unit
-                    .as_any()
-                    .downcast_ref::<ImperialWeightUnit>()
-                    .unwrap();
-                let mut weight = curr_unit.clone();
-                match name {
-                    "st" => {
-                        weight.st = value.parse().unwrap();
-                    }
-                    "lbs" => {
-                        weight.lbs = value.parse().unwrap();
-                    }
-                    _ => {
-                        log!("Invalid unit type");
-                    }
-                }
-                let mut new_imperial = units.clone();
-                new_imperial.weight = weight;
-                unit.set(CalcType::Imperial(new_imperial));
-            }
-        },
-        _ => {
-            log!("Invalid unit type");
-        }
     }
 }

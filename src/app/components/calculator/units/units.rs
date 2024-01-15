@@ -6,9 +6,12 @@ use yew::Properties;
 
 
 pub trait Units {
-    fn get_fields(&self) -> Vec<&str>;
+    fn get_weight_fields(&self) -> Vec<&str>;
+    fn get_height_fields(&self) -> Vec<&str>;
+    fn set_value(&mut self, field: &str, value: f32);
     fn get_value(&self, field: &str) -> f32;
     fn as_any(&self) -> &dyn Any;
+
 }
 
 
@@ -20,114 +23,99 @@ pub enum CalcType {
 
 #[derive(Clone, PartialEq, Properties, Serialize, Deserialize, FieldNamesAsArray)]
 pub struct MetricUnit {
-    pub height: MetricHeightUnit,
-    pub weight: MetricWeightUnit
-}
-
-#[derive(Clone, PartialEq, Properties, Serialize, Deserialize, FieldNamesAsArray)]
-pub struct ImperialUnit {
-    pub height: ImperialHeightUnit,
-    pub weight: ImperialWeightUnit
-}
-
-#[derive(Clone, PartialEq, Properties, Serialize, Deserialize, FieldNamesAsArray)]
-pub struct MetricHeightUnit {
-    pub cm: f32
-}
-
-#[derive(Clone, PartialEq, Properties, Serialize, Deserialize, FieldNamesAsArray)]
-pub struct MetricWeightUnit {
+    pub cm: f32,
     pub kg: f32
 }
 
 #[derive(Clone, PartialEq, Properties, Serialize, Deserialize, FieldNamesAsArray)]
-pub struct ImperialHeightUnit {
+pub struct ImperialUnit {
     pub ft: f32,
-    pub inches: f32
-}
-
-#[derive(Clone, PartialEq, Properties, Serialize, Deserialize, FieldNamesAsArray)]
-pub struct ImperialWeightUnit {
+    pub inches: f32,
     pub st: f32,
     pub lbs: f32
+
 }
 
 impl MetricUnit {
     pub fn new() -> Self {
-        Self {
-            height: MetricHeightUnit {cm: 0.0},
-            weight: MetricWeightUnit {kg: 0.0}
+        MetricUnit {
+            cm: 0.0,
+            kg: 0.0
         }
     }
 }
 
 impl ImperialUnit {
     pub fn new() -> Self {
-        Self {
-            height: ImperialHeightUnit {ft: 0.0, inches: 0.0},
-            weight: ImperialWeightUnit {st: 0.0, lbs: 0.0}
+        ImperialUnit {
+            ft: 0.0,
+            inches: 0.0,
+            st: 0.0,
+            lbs: 0.0
         }
     }
 }
 
-impl Units for MetricHeightUnit {
-    fn get_fields(&self) -> Vec<&str> {
+impl Units for MetricUnit {
+    fn get_weight_fields(&self) -> Vec<&str> {
+        vec!["kg"]
+    }
+
+    fn get_height_fields(&self) -> Vec<&str> {
         vec!["cm"]
     }
+
     fn get_value(&self, field: &str) -> f32 {
         match field {
+            "kg" => self.kg,
             "cm" => self.cm,
             _ => 0.0
         }
     }
+
     fn as_any(&self) -> &dyn Any {
         self
     }
-}
 
-impl Units for MetricWeightUnit {
-    fn get_fields(&self) -> Vec<&str> {
-        vec!["kg"]
-    }
-    fn get_value(&self, field: &str) -> f32 {
+    fn set_value(&mut self, field: &str, value: f32) {
         match field {
-            "kg" => self.kg,
-            _ => 0.0
+            "kg" => self.kg = value,
+            "cm" => self.cm = value,
+            _ => ()
         }
     }
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
 }
 
-impl Units for ImperialHeightUnit {
-    fn get_fields(&self) -> Vec<&str> {
+impl Units for ImperialUnit {
+    fn get_weight_fields(&self) -> Vec<&str> {
+        vec!["st", "lbs"]
+    }
+
+    fn get_height_fields(&self) -> Vec<&str> {
         vec!["ft", "in"]
     }
+
     fn get_value(&self, field: &str) -> f32 {
         match field {
             "ft" => self.ft,
             "in" => self.inches,
-            _ => 0.0
-        }
-    }
-    fn as_any(&self) -> &dyn Any {
-        self
-    }
-}
-
-impl Units for ImperialWeightUnit {
-    fn get_fields(&self) -> Vec<&str> {
-        vec!["st", "lbs"]
-    }
-    fn get_value(&self, field: &str) -> f32 {
-        match field {
             "st" => self.st,
             "lbs" => self.lbs,
             _ => 0.0
         }
     }
+
     fn as_any(&self) -> &dyn Any {
         self
+    }
+
+    fn set_value(&mut self, field: &str, value: f32) {
+        match field {
+            "ft" => self.ft = value,
+            "in" => self.inches = value,
+            "st" => self.st = value,
+            "lbs" => self.lbs = value,
+            _ => ()
+        }
     }
 }

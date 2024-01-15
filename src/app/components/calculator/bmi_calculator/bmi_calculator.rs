@@ -54,8 +54,8 @@ pub fn bmi_calculator(props: &Props) -> Html {
         move |call: &UseStateHandle<CalcType>| {
             match call.deref() {
                 CalcType::Metric(unit) => {
-                    let height = unit.height.cm;
-                    let weight = unit.weight.kg;
+                    let height = unit.cm;
+                    let weight = unit.kg;
                     if height == 0.0 {
                         bmi.set(-1.0);
                         return;
@@ -64,8 +64,8 @@ pub fn bmi_calculator(props: &Props) -> Html {
                     bmi.set(bmi_val);
                 }
                 CalcType::Imperial(unit) => {
-                    let height = unit.height.ft * 12.0 + unit.height.inches;
-                    let weight = unit.weight.st * 14.0 + unit.weight.lbs;
+                    let height = unit.ft * 12.0 + unit.inches;
+                    let weight = unit.st * 14.0 + unit.lbs;
                     if height == 0.0 {
                         bmi.set(-1.0);
                         return;
@@ -143,7 +143,7 @@ pub fn calc_ideal_weight(call: &UseStateHandle<CalcType>) -> ((f32, f32), (f32, 
     let bmi_high_val = 24.9;
     match call.deref() {
         CalcType::Metric(unit) => {
-            let height = unit.height.cm;
+            let height = unit.cm;
             // let weight = unit.weight.kg;
             let ideal_low_weight = bmi_low_val * ((height / 100.0) * (height / 100.0));
             let ideal_high_weight = bmi_high_val * ((height / 100.0) * (height / 100.0));
@@ -151,7 +151,7 @@ pub fn calc_ideal_weight(call: &UseStateHandle<CalcType>) -> ((f32, f32), (f32, 
             ((ideal_low_weight, 0.0), (ideal_high_weight, 0.0))
         }
         CalcType::Imperial(unit) => {
-            let height = unit.height.ft * 12.0 + unit.height.inches;
+            let height = unit.ft * 12.0 + unit.inches;
             // let weight = unit.weight.st * 14.0 + unit.weight.lbs;
             let ideal_low_weight = bmi_low_val * ((height * height)/ 703.0);
             let ideal_high_weight = bmi_high_val * ((height * height)/ 703.0);
